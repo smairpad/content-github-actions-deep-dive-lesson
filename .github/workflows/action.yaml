@@ -1,0 +1,31 @@
+name: Workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup-python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install libraries
+        run: |
+            cd function
+            python -m pip install --upgrade pip
+            if [-f requirements.txt ]; then pip install -r requirements.txt -t .; fi
+      - name: Create Zip
+        run: |
+            cd function
+            zip -r ../${{ github.sha }}.zip .
+      - name: Archieve Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: zipped-artifact
+          path: ${{ github.sha }}.zip
+          
+      
