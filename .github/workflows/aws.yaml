@@ -43,3 +43,20 @@ jobs:
           aws-region: us-east-1
       - name: Upload to s3
         run: aws s3 cp ${{ github.sha }}.zip s3://githubactions2022wertfg/${{ github.sha }}.zip
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publishtos3
+    steps:
+      - name: Configure AWS cli
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Update lambda function code we created role and lambda fnc in AWS
+        run: |
+            aws lambda update-function-code \
+            --function-name my-function \
+            --s3-bucket githubactions2022wertfg \
+            --s3-key ${{ github.sha }}.zip \
+            --publish
