@@ -1,4 +1,4 @@
-name: PublishtoS3Bucket
+name: PublishtoAWSS3Bucket
 on:
   push:
     branches:
